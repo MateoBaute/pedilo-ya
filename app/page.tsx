@@ -1,65 +1,271 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Moon, Sun, Utensils, ShoppingBag, Pill, Croissant, Beer, Wrench, Gift } from "lucide-react";
 
 export default function Home() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("pedilo-theme");
+    if (savedTheme === "dark") {
+      setIsDark(true);
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      window.localStorage.setItem("pedilo-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      window.localStorage.setItem("pedilo-theme", "light");
+    }
+  }, [isDark]);
+
+  const categories = [
+    { icon: Utensils, label: "Comida" },
+    { icon: ShoppingBag, label: "Almacén" },
+    { icon: Pill, label: "Farmacia" },
+    { icon: Croissant, label: "Panadería" },
+    { icon: Beer, label: "Bebidas" },
+    { icon: Wrench, label: "Ferretería" },
+    { icon: Gift, label: "Regalos" },
+  ];
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <>
+      <header className="site-header">
+        <div className="wrap nav">
+          <div className="logo">
+            Pedilo<span className="logo-accent">Ya</span>
+          </div>
+          <nav className="nav-links" aria-label="Navegación principal">
+            <a className="nav-link" href="#como-funciona">Cómo funciona</a>
+            <a className="nav-link" href="#negocios">Negocios</a>
+            <a className="nav-link" href="#repartidores">Repartidores</a>
+            <a className="nav-link" href="#ayuda">Ayuda</a>
+          </nav>
+          <div className="nav-actions">
+            <button
+              className="theme-toggle"
+              onClick={() => setIsDark((prev) => !prev)}
+              aria-label="Cambiar tema"
+              type="button"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button className="nav-cta">Iniciar sesión</button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <section className="hero">
+        <div className="wrap hero-grid">
+          <div>
+            <span className="eyebrow">
+              <span className="pulse" />
+              Hecho para el interior
+            </span>
+            <h1 className="hero-title">
+              Lo que necesitás,
+              <br />
+              <span>cerca tuyo.</span>
+            </h1>
+            <p className="hero-copy">
+              Pedilo Ya conecta los negocios de tu ciudad con repartidores de tu
+              zona. Sin vueltas, sin depender de que llegue de Montevideo.
+            </p>
+
+            <form className="region-picker" role="search" aria-label="Elegir localidad">
+              <select aria-label="Localidad">
+                <option>¿Dónde estás?</option>
+                <option>Mercedes, Soriano</option>
+                <option>Dolores, Soriano</option>
+                <option>Fray Bentos, Río Negro</option>
+                <option>Young, Río Negro</option>
+                <option>Trinidad, Flores</option>
+              </select>
+              <button className="hero-button" type="submit">
+                Ver lo que hay
+              </button>
+            </form>
+            <p className="hero-note">🟢 24 negocios activos hoy en tu región</p>
+          </div>
+
+          <div className="route-stage" aria-hidden="true">
+            <svg viewBox="0 0 500 420">
+              <path
+                className="route-path"
+                d="M 40,340 C 100,260 90,150 170,120 C 260,86 300,180 380,140 C 430,116 420,60 470,40"
+              />
+              <circle className="town" cx="40" cy="340" r="9" />
+              <text className="town-label" x="52" y="345">SEDE</text>
+              <circle className="town" cx="170" cy="120" r="7" />
+              <text className="town-label" x="180" y="112">RUTA 2</text>
+              <circle className="town" cx="380" cy="140" r="7" />
+              <text className="town-label" x="392" y="150">CENTRO</text>
+              <circle className="town" cx="470" cy="40" r="9" fill="#FFC145" />
+              <text className="town-label" x="425" y="28">DESTINO</text>
+
+              <g className="rider">
+                <circle r="15" fill="#C63D2F" stroke="#2B2016" strokeWidth="2.5" />
+                <text x="0" y="5" fontSize="15" textAnchor="middle">
+                  🛵
+                </text>
+              </g>
+            </svg>
+
+            <div className="parcel-card">
+              <div className="parcel-badge">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M5 13l4 4L19 7"
+                    stroke="white"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <div className="parcel-title">Pedido entregado</div>
+                <div className="parcel-subtitle">14 min · $70 cobrados</div>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="categories">
+        <div className="wrap">
+          <div className="cat-row">
+            {categories.map((item) => (
+              <div key={item.label} className="cat-pill">
+                <span className="cat-icon">
+                  <item.icon />
+                </span>
+                {item.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="how" id="como-funciona">
+        <div className="wrap">
+          <div className="section-head">
+            <span className="eyebrow">
+              <span className="pulse" />
+              El recorrido
+            </span>
+            <h2>Del pedido a la puerta de tu casa</h2>
+          </div>
+          <div className="steps">
+            <div className="step">
+              <div className="step-num">01</div>
+              <h3>Elegí tu zona</h3>
+              <p>
+                Seleccioná tu ciudad y vas a ver solo lo que realmente te pueden
+                entregar ahí, sin sorpresas de cobertura.
+              </p>
+            </div>
+            <div className="step">
+              <div className="step-num">02</div>
+              <h3>Armá tu pedido</h3>
+              <p>
+                Elegís el producto, ves el precio real con el envío incluido, y
+                pagás con Mercado Pago desde la app.
+              </p>
+            </div>
+            <div className="step">
+              <div className="step-num">03</div>
+              <h3>Lo recibís rapidito</h3>
+              <p>
+                Un repartidor de tu zona lo levanta y te lo lleva. Seguís el
+                pedido en tiempo real hasta que golpea la puerta.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="join">
+        <div className="wrap join-grid">
+          <div id="negocios" className="join-card negocio">
+            <span className="tag">Para negocios</span>
+            <h3>Vendé sin límite de vidriera</h3>
+            <p>
+              Subí tus productos, definí tu zona de entrega y llegá a clientes
+              que hoy no saben que existís.
+            </p>
+            <button className="cta-button">Sumar mi negocio →</button>
+            <svg className="deco" viewBox="0 0 100 100">
+              <rect x="10" y="30" width="80" height="55" rx="6" fill="white" />
+              <rect x="25" y="15" width="50" height="20" rx="4" fill="white" />
+            </svg>
+          </div>
+
+          <div id="repartidores" className="join-card repartidor">
+            <span className="tag">Para repartidores</span>
+            <h3>Cobrá al toque, cuando quieras</h3>
+            <p>
+              Aceptá los pedidos que quieras, cuando te convenga. Cobrás cada
+              entrega al instante, sin esperar a fin de semana.
+            </p>
+            <button className="cta-button-alt">Quiero repartir →</button>
+            <svg className="deco" viewBox="0 0 100 100">
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                fill="none"
+                stroke="white"
+                strokeWidth="6"
+                strokeDasharray="10 8"
+              />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <footer id="ayuda">
+        <div className="wrap">
+          <div className="foot-grid">
+            <div>
+              <div className="foot-logo">Pedilo Ya</div>
+              <p style={{ marginTop: 10, fontSize: 14, color: "var(--ink-soft)", maxWidth: "26ch" }}>
+                Del interior, para el interior.
+              </p>
+            </div>
+            <div className="foot-links">
+              <div className="foot-col">
+                <h4>Producto</h4>
+                <a href="#como-funciona">Cómo funciona</a>
+                <a href="#negocios">Para negocios</a>
+                <a href="#repartidores">Para repartidores</a>
+              </div>
+              <div className="foot-col">
+                <h4>Ayuda</h4>
+                <a href="#">Centro de ayuda</a>
+                <a href="#">Contacto</a>
+                <a href="#">Términos y condiciones</a>
+              </div>
+              <div className="foot-col">
+                <h4>Seguinos</h4>
+                <a href="#">Instagram</a>
+                <a href="#">WhatsApp</a>
+              </div>
+            </div>
+          </div>
+          <div className="foot-bottom">
+            <span>© 2026 Pedilo Ya · Uruguay</span>
+            <span className="font-mono-custom">Hecho en el interior 🇺🇾</span>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }
