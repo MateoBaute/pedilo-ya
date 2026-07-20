@@ -35,8 +35,16 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${baloo.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
     >
-      <body className="bg-[#FBF3E6] text-[#2B2016] antialiased">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('pedilo-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();`,
+          }}
+        />
+      </head>
+      <body className="antialiased">
         {children}
       </body>
     </html>

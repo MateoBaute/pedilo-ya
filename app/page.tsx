@@ -1,10 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Moon, Sun, Utensils, ShoppingBag, Pill, Croissant, Beer, Wrench, Gift } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { Moon, Sun, Utensils, ShoppingBag, Pill, Croissant, Beer, Wrench, Gift, ChevronDown, MapPin } from "lucide-react";
 
 export default function Home() {
   const [isDark, setIsDark] = useState(false);
+  const [location, setLocation] = useState("");
+  const [locationOpen, setLocationOpen] = useState(false);
+  const locationRef = useRef<HTMLDivElement>(null);
+
+  const locations = [
+    "Mercedes, Soriano",
+    "Dolores, Soriano",
+    "Fray Bentos, Río Negro",
+    "Young, Río Negro",
+    "Trinidad, Flores",
+  ];
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
+        setLocationOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("pedilo-theme");
@@ -57,7 +79,7 @@ export default function Home() {
             >
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <button className="nav-cta">Iniciar sesión</button>
+            <Link href="/login" className="nav-cta">Iniciar sesión</Link>
           </div>
         </div>
       </header>
@@ -80,14 +102,39 @@ export default function Home() {
             </p>
 
             <form className="region-picker" role="search" aria-label="Elegir localidad">
-              <select aria-label="Localidad">
-                <option>¿Dónde estás?</option>
-                <option>Mercedes, Soriano</option>
-                <option>Dolores, Soriano</option>
-                <option>Fray Bentos, Río Negro</option>
-                <option>Young, Río Negro</option>
-                <option>Trinidad, Flores</option>
-              </select>
+              <div className="custom-select" ref={locationRef}>
+                <button
+                  type="button"
+                  className="custom-select-trigger"
+                  aria-haspopup="listbox"
+                  aria-expanded={locationOpen}
+                  onClick={() => setLocationOpen((prev) => !prev)}
+                >
+                  <span className={location ? "" : "custom-select-placeholder"}>
+                    <MapPin size={14} />
+                    {location || "¿Dónde estás?"}
+                  </span>
+                  <ChevronDown size={15} />
+                </button>
+                {locationOpen && (
+                  <ul className="custom-select-dropdown" role="listbox">
+                    {locations.map((loc) => (
+                      <li
+                        key={loc}
+                        role="option"
+                        aria-selected={location === loc}
+                        className={`custom-select-option${location === loc ? " selected" : ""}`}
+                        onClick={() => {
+                          setLocation(loc);
+                          setLocationOpen(false);
+                        }}
+                      >
+                        {loc}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               <button className="hero-button" type="submit">
                 Ver lo que hay
               </button>
