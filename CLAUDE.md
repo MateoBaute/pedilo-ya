@@ -43,9 +43,15 @@ Pendiente → Aceptado por la empresa → Listo para retirar → En camino → E
 - Calificación baja sostenida → revisión manual del perfil.
 
 ### Plataforma técnica
-- Next.js (App Router), configuración estándar de `create-next-app` — **Tailwind v4** (usa `@import "tailwindcss";` en `globals.css`, no los directives viejos `@tailwind base/components/utilities`).
+- Next.js (App Router), configuración estándar de `create-next-app`.
 - Arrancar como app web responsive (no nativa).
 - Push notifications reales (importantes para repartidores en movimiento) son limitadas en web, sobre todo iOS — evaluar PWA o nativa más adelante, no bloqueante ahora.
+
+### Convención de estilos — CSS con nombre, no utilities de Tailwind encadenadas
+- **Decisión:** el proyecto NO usa clases de Tailwind arbitrarias/encadenadas (tipo `h-[260px] md:h-[420px]`, `shadow-[6px_6px_0_#2B2016]`, `order-first md:order-none`). En su lugar, todo el estilo vive en `app/globals.css` como clases CSS con nombre normal (`.hero`, `.route-stage`, `.join-card`, etc.), igual que en el mockup HTML original (`index.html`).
+- **Motivo:** un intento anterior de portar el mockup a Tailwind produjo roturas visuales (texto superpuesto, SVG cortado, contenido de tarjetas que desaparecía) por depender de muchas utilities arbitrarias encadenadas, frágiles ante diferencias de entorno/build. Se descartó ese enfoque.
+- **Regla para código nuevo:** si hay que agregar una página o componente nuevo, seguir el mismo patrón — clases con nombre semántico en `globals.css`, `className` simple en el JSX (sin corchetes `[...]` de Tailwind, sin cadenas largas de utilities). Variables de marca (colores, fuentes) van como custom properties CSS en `:root` dentro de `globals.css`, no repetidas como valores arbitrarios sueltos.
+- Las únicas clases que NO son "estilo con nombre" son las que genera `next/font` en `layout.tsx` (`--font-display`, `--font-body`, `--font-mono`) — esas son necesarias para exponer las variables de fuente y no utilities de Tailwind.
 
 ### Tema legal pendiente
 - Uruguay tiene debate abierto sobre relación laboral de repartidores de plataformas (¿contratista independiente o empleado?). No resolver ahora, pero sí tener T&C claros desde el día uno sobre el vínculo repartidor-app.
@@ -92,14 +98,14 @@ Puntos clave del esquema:
 - `pedidos.total` tiene un `check constraint` que exige `total = subtotal_productos + tarifa_envio`.
 - Ver `schema.sql` para las políticas de RLS completas por tabla — en particular, `pagos` y `transferencias_repartidor` están pensadas para escribirse solo desde una Edge Function con service role key, no desde el cliente.
 
-## Bug abierto / pendiente de diagnosticar
+## Bug resuelto (histórico)
 
-Al portar el mockup HTML a Next.js + Tailwind (`app/page.tsx`), aparecieron problemas visuales en el entorno del usuario que **no** aparecían en el mockup HTML original (`index.html`): texto superpuesto en el hero (la tarjeta "pedido entregado" pisa el título), el SVG de la ruta se ve cortado a un rincón, y las tarjetas de "Sumar mi negocio" / "Quiero repartir" pierden parte del contenido.
-
-Hipótesis de trabajo: se usaron muchas clases Tailwind arbitrarias encadenadas (alturas responsivas `h-[260px] md:h-[420px]`, `order-first`, sombras compuestas `shadow-[6px_6px_0_#2B2016]`) que son frágiles si el entorno de preview no compila exactamente igual que un `npm run dev` real del proyecto. **No se confirmó todavía** si el usuario está corriendo el proyecto Next.js real o previsualizando en otra herramienta — esa es la primera pregunta a resolver antes de seguir parchando. Si se confirma que es el proyecto real y el bug persiste, el plan es reescribir esas secciones (hero/ilustración de ruta, tarjetas CTA) usando clases CSS nombradas en `globals.css` en vez de utilities arbitrarias encadenadas, replicando el CSS del `index.html` original que sí funcionaba bien.
+Un intento anterior de portar el mockup HTML a Next.js usando muchas clases Tailwind arbitrarias/encadenadas causó roturas visuales (texto superpuesto en el hero, SVG de ruta cortado, contenido de tarjetas que desaparecía) que no estaban en el mockup HTML original. Se resolvió reescribiendo `globals.css`/`page.tsx`/`layout.tsx` con clases CSS con nombre (ver "Convención de estilos" arriba). No reintroducir utilities arbitrarias encadenadas.
 
 ## Archivos de referencia en este repo
 
-- `index.html` — mockup funcional del home con la paleta y tipografía definitivas (referencia visual de cómo se ve bien).
-- `app/layout.tsx`, `app/page.tsx`, `app/globals.css` — versión Next.js/Tailwind del home (tiene el bug abierto de arriba).
+- `index.html` — mockup funcional del home, referencia visual original.
+- `app/layout.tsx` — carga las 3 fuentes vía `next/font`, sin utilities de Tailwind.
+- `app/page.tsx` — JSX del home con clases con nombre (`.hero`, `.route-stage`, `.join-card`, etc.), sin utilities de Tailwind.
+- `app/globals.css` — todo el estilo del sitio: variables de marca en `:root` + una clase por componente, misma estética que `index.html`.
 - `schema.sql` — DDL completo de Supabase: tablas, enums, índices, triggers y RLS.

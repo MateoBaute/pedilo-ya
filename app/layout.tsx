@@ -35,18 +35,8 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${baloo.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
-      suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('pedilo-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark');})();`,
-          }}
-        />
-      </head>
-      <body className="antialiased">
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
