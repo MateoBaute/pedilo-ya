@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShoppingBag, User, Bike } from "lucide-react";
 
 type Rol = "cliente" | "negocio" | "repartidor";
+
+interface LocationItem {
+  id: number;
+  name: string;
+}
 
 const ROLES = [
   { id: "cliente" as Rol,      icon: User,        label: "Cliente",      desc: "Quiero hacer pedidos" },
@@ -36,15 +41,78 @@ const fieldInput: React.CSSProperties = {
 export default function RegisterPage() {
   const router = useRouter();
   const [rol, setRol] = useState<Rol>("cliente");
+
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rutCedula, setRutCedula] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [direccion, setDireccion] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [location, setLocation] = useState("");
+  const [locationsList, setLocationsList] = useState<LocationItem[]>([]);
 
-  function handleSubmit(e: React.FormEvent) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchLocations() {
+      try {
+        const response = await fetch('/api/locations', {
+          method: 'GET',
+        });
+        const data = await response.json();
+        if (data.success) {
+          setLocationsList(data.list);
+        }
+      } catch (error) { }
+    }
+    fetchLocations();
+  }, []);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    router.push("/login");
+    setError("");
+    setLoading(true);
+
+    try {
+      const payload: Record<string, unknown> = {
+        role: rol,
+        name: nombre,
+        email,
+        password,
+      };
+
+      if (rol === "cliente") {
+        payload.phone = telefono;
+        payload.address = direccion;
+        payload.location = location;
+      } else if (rol === "negocio") {
+        payload.description = descripcion;
+        payload.address = direccion;
+        payload.location = location;
+      } else if (rol === "repartidor") {
+        payload.phone = telefono;
+      }
+
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        router.push("/login");
+      } else {
+        setError(data.error || "No se pudo crear la cuenta. Probá de nuevo.");
+      }
+    } catch (error) {
+      setError("Error de conexión. Probá de nuevo.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -154,14 +222,15 @@ export default function RegisterPage() {
             />
           </div>
 
-          {rol === "negocio" && (
+          {(rol === "cliente" || rol === "repartidor") && (
             <div>
-              <label style={fieldLabel}>RUT o cédula del titular</label>
+              <label style={fieldLabel}>Teléfono</label>
               <input
-                type="text"
-                value={rutCedula}
-                onChange={e => setRutCedula(e.target.value)}
-                placeholder="Ej: 21234567-8"
+                type="tel"
+                value={telefono}
+                onChange={e => setTelefono(e.target.value)}
+                placeholder="Ej: 099 123 456"
+                required
                 style={fieldInput}
                 onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
                 onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
@@ -169,18 +238,54 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {rol === "repartidor" && (
+          {rol === "negocio" && (
             <div>
-              <label style={fieldLabel}>Teléfono de contacto</label>
+              <label style={fieldLabel}>Descripción</label>
               <input
-                type="tel"
-                value={telefono}
-                onChange={e => setTelefono(e.target.value)}
-                placeholder="Ej: 099 123 456"
+                type="text"
+                value={descripcion}
+                onChange={e => setDescripcion(e.target.value)}
+                placeholder="Contanos qué vendés"
+                required
                 style={fieldInput}
                 onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
                 onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
               />
+            </div>
+          )}
+
+          {(rol === "cliente" || rol === "negocio") && (
+            <div>
+              <label style={fieldLabel}>Dirección</label>
+              <input
+                type="text"
+                value={direccion}
+                onChange={e => setDireccion(e.target.value)}
+                placeholder="Calle y número"
+                required
+                style={fieldInput}
+                onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
+                onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
+              />
+            </div>
+          )}
+
+          {(rol === "cliente" || rol === "negocio") && (
+            <div>
+              <label style={fieldLabel}>Localidad</label>
+              <select
+                value={location}
+                onChange={e => setLocation(e.target.value)}
+                required
+                style={fieldInput}
+                onFocus={e => (e.target as HTMLSelectElement).style.borderColor = "rgba(255,193,69,0.55)"}
+                onBlur={e => (e.target as HTMLSelectElement).style.borderColor = "rgba(255,255,255,0.13)"}
+              >
+                <option value="" disabled>Elegí tu localidad</option>
+                {locationsList.map(loc => (
+                  <option key={loc.id} value={loc.name}>{loc.name}</option>
+                ))}
+              </select>
             </div>
           )}
 
@@ -215,13 +320,20 @@ export default function RegisterPage() {
             />
           </div>
 
+          {error && (
+            <p style={{ fontSize: 13, color: "#FF8A80", margin: 0 }}>{error}</p>
+          )}
+
           <button
             type="submit"
+            disabled={loading}
             style={{
               marginTop: 4,
               background: "linear-gradient(135deg, #C63D2F, #9e2a1e)",
               color: "#FBF3E6", fontWeight: 700, fontSize: 15,
-              padding: "14px", borderRadius: 14, border: "none", cursor: "pointer",
+              padding: "14px", borderRadius: 14, border: "none",
+              cursor: loading ? "default" : "pointer",
+              opacity: loading ? 0.7 : 1,
               boxShadow: "0 4px 20px rgba(198,61,47,0.4)",
               transition: "transform 0.15s, box-shadow 0.15s",
             }}
@@ -234,7 +346,7 @@ export default function RegisterPage() {
               (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(198,61,47,0.4)";
             }}
           >
-            Crear cuenta
+            {loading ? "Creando cuenta..." : "Crear cuenta"}
           </button>
         </form>
       </div>
