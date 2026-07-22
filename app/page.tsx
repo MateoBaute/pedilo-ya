@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Utensils, ShoppingBag, Pill, Croissant,
   Beer, Wrench, Gift, ChevronDown, MapPin,
 } from "lucide-react";
+
 
 // ── Shared style tokens ──────────────────────────────────────────────────────
 const BG = "linear-gradient(160deg, #0f0906 0%, #1e1408 35%, #150d07 65%, #0a0603 100%)";
@@ -27,7 +29,7 @@ const glassStrong: React.CSSProperties = {
 };
 
 const locationsBack: React.CSSProperties = {
-  background: "rgba(56, 42, 30, 0.92)",
+  background: "rgba(56, 42, 30, 1)",
   backdropFilter: "blur(24px)",
   WebkitBackdropFilter: "blur(24px)",
   border: "1px solid rgba(255, 255, 255, 0.12)",
@@ -51,24 +53,23 @@ const eyebrow = (color: string, bg: string): React.CSSProperties => ({
   letterSpacing: "0.06em",
 });
 
-// ── Categories ───────────────────────────────────────────────────────────────
 const CATEGORIES = [
-  { icon: Utensils,   label: "Comida" },
+  { icon: Utensils, label: "Comida" },
   { icon: ShoppingBag, label: "Almacén" },
-  { icon: Pill,       label: "Farmacia" },
-  { icon: Croissant,  label: "Panadería" },
-  { icon: Beer,       label: "Bebidas" },
-  { icon: Wrench,     label: "Ferretería" },
-  { icon: Gift,       label: "Regalos" },
+  { icon: Pill, label: "Farmacia" },
+  { icon: Croissant, label: "Panadería" },
+  { icon: Beer, label: "Bebidas" },
+  { icon: Wrench, label: "Ferretería" },
+  { icon: Gift, label: "Regalos" },
 ];
 
-const LOCATIONS = [
-  "Mercedes, Soriano",
-  "Dolores, Soriano",
-  "Fray Bentos, Río Negro",
-  "Young, Río Negro",
-  "Trinidad, Flores",
-];
+// const LOCATIONS = [
+//   "Mercedes, Soriano",
+//   "Dolores, Soriano",
+//   "Fray Bentos, Río Negro",
+//   "Young, Río Negro",
+//   "Trinidad, Flores",
+// ];
 
 const STEPS = [
   {
@@ -93,10 +94,19 @@ const STEPS = [
 
 // ── Component ────────────────────────────────────────────────────────────────
 export default function Home() {
+  const router = useRouter();
+
   const [location, setLocation] = useState("");
+  const [locationsList, setLocationsList] = useState<LocationItem[]>([])
   const [locationOpen, setLocationOpen] = useState(false);
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
   const locationRef = useRef<HTMLDivElement>(null);
+
+  interface LocationItem {
+    id: number;
+    name: string;
+  }
+
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -114,6 +124,36 @@ export default function Home() {
   function hoverOut(e: React.MouseEvent, styles: Partial<CSSStyleDeclaration>) {
     Object.assign((e.currentTarget as HTMLElement).style, styles);
   }
+
+  async function fetchProducts() {
+    router.push("/shop");
+    try {
+
+    } catch (error) {
+
+    }
+  }
+
+  async function locations() {
+    try {
+      const response = await fetch('/api/locations', {
+        method: 'GET',
+
+      });
+      const data = await response.json();
+
+      if (data.success) {
+
+        setLocationsList(data.list)
+      }
+    } catch (error) { }
+  }
+
+  useEffect(() => {
+    locations();
+    addEventListener('submit', fetchProducts)
+  }, [])
+
 
   return (
     <div style={{ minHeight: "100vh", background: BG, color: "#FBF3E6", overflowX: "hidden" }}>
@@ -276,22 +316,22 @@ export default function Home() {
                         borderRadius: 16, zIndex: 200, padding: 6,
                       }}
                     >
-                      {LOCATIONS.map(loc => (
+                      {locationsList.map(loc => (
                         <li
-                          key={loc}
+                          key={loc.id}
                           role="option"
-                          aria-selected={location === loc}
-                          onClick={() => { setLocation(loc); setLocationOpen(false); }}
+                          aria-selected={location === loc.name}
+                          onClick={() => { setLocation(loc.name); setLocationOpen(false); }}
                           style={{
                             padding: "10px 14px", fontSize: 14, fontWeight: 600,
                             borderRadius: 10, cursor: "pointer", transition: "background 0.1s",
-                            color: location === loc ? "#FFC145" : "#FBF3E6",
-                            background: location === loc ? "rgba(255,193,69,0.14)" : "transparent",
+                            color: location === loc.name ? "#FFC145" : "#FBF3E6",
+                            background: location === loc.name ? "rgba(255,193,69,0.14)" : "transparent",
                           }}
-                          onMouseEnter={e => { if (location !== loc) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
-                          onMouseLeave={e => { if (location !== loc) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                          onMouseEnter={e => { if (location !== loc.name) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+                          onMouseLeave={e => { if (location !== loc.name) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                         >
-                          {loc}
+                          {loc.name}
                         </li>
                       ))}
                     </ul>
@@ -329,8 +369,8 @@ export default function Home() {
                 className="route-path"
                 d="M 40,340 C 100,260 90,150 170,120 C 260,86 300,180 380,140 C 430,116 420,60 470,40"
               />
-              <circle className="town" cx="40"  cy="340" r="9" />
-              <text className="town-label" x="52"  y="345">SEDE</text>
+              <circle className="town" cx="40" cy="340" r="9" />
+              <text className="town-label" x="52" y="345">SEDE</text>
               <circle className="town" cx="170" cy="120" r="7" />
               <text className="town-label" x="180" y="112">RUTA 2</text>
               <circle className="town" cx="380" cy="140" r="7" />
