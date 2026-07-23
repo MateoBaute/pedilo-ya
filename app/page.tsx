@@ -125,13 +125,11 @@ export default function Home() {
     Object.assign((e.currentTarget as HTMLElement).style, styles);
   }
 
-  async function fetchProducts() {
+  function redirectShop(e: React.FormEvent) {
+    e.preventDefault();
+    if (!location) return;
+    localStorage.setItem("location", location);
     router.push("/shop");
-    try {
-
-    } catch (error) {
-
-    }
   }
 
   async function locations() {
@@ -151,7 +149,6 @@ export default function Home() {
 
   useEffect(() => {
     locations();
-    addEventListener('submit', fetchProducts)
   }, [])
 
 
@@ -269,7 +266,7 @@ export default function Home() {
             </p>
 
             {/* Location picker */}
-            <form role="search" style={{ maxWidth: 460 }}>
+            <form role="search" style={{ maxWidth: 460 }} onSubmit={redirectShop}>
               <div style={{
                 ...glassStrong,
                 borderRadius: 20, padding: 8,
