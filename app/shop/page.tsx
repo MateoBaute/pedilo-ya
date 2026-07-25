@@ -10,6 +10,7 @@ export interface Product {
     category: string;
     price: number;
     location?: string;
+    shopName: string;
 }
 
 export default function Shop() {
@@ -72,6 +73,7 @@ export default function Shop() {
                                     <p style={{ fontFamily: "var(--font-mono)", fontSize: 14, marginTop: 6, color: "#FFC145" }}>
                                         ${product.price}
                                     </p>
+                                    <label>{product.shopName}</label>
                                 </div>
                             ))}
                         </div>

@@ -42,9 +42,36 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    router.push("/");
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+      const data = await response.json();
+      if (data.success) {
+        if (data.type === "user") {
+          sessionStorage.setItem("userId", data.userId);
+          sessionStorage.setItem("token", data.token);
+
+        } else if (data.type === "store") {
+          sessionStorage.setItem("storeId", data.storeId);
+          sessionStorage.setItem("token", data.token);
+
+        }
+        sessionStorage.setItem("token", data.token);
+        router.push("/pedidos");
+
+      } else {
+        console.error("Error logging in:", data.error);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+    }
   }
 
   return (

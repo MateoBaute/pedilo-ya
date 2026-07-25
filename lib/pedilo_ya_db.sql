@@ -115,7 +115,9 @@ CREATE TABLE `stores` (
   `description` text NOT NULL,
   `address` varchar(255) NOT NULL,
   `average_rating` decimal(3,2) DEFAULT 0.00,
-  `location` varchar(45) NOT NULL
+  `location` varchar(45) NOT NULL,
+  `email` varchar(150) DEFAULT NULL,
+  `password_hash` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -160,7 +162,8 @@ ALTER TABLE `reviews`
 --
 ALTER TABLE `stores`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_stores_location` (`location`);
+  ADD KEY `fk_stores_location` (`location`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas

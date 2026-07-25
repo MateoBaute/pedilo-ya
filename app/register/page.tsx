@@ -13,9 +13,9 @@ interface LocationItem {
 }
 
 const ROLES = [
-  { id: "cliente" as Rol,      icon: User,        label: "Cliente",      desc: "Quiero hacer pedidos" },
-  { id: "negocio" as Rol,      icon: ShoppingBag, label: "Negocio",      desc: "Quiero vender" },
-  { id: "repartidor" as Rol,   icon: Bike,        label: "Repartidor",   desc: "Quiero repartir" },
+  { id: "cliente" as Rol,      icon: User,        label: "Cliente",      desc: "Quiero hacer pedidos",   available: false },
+  { id: "negocio" as Rol,      icon: ShoppingBag, label: "Negocio",      desc: "Quiero vender",          available: true },
+  { id: "repartidor" as Rol,   icon: Bike,        label: "Repartidor",   desc: "Quiero repartir",        available: false },
 ];
 
 const PAGE_BG = "linear-gradient(160deg, #0f0906 0%, #1e1408 35%, #150d07 65%, #0a0603 100%)";
@@ -40,7 +40,7 @@ const fieldInput: React.CSSProperties = {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [rol, setRol] = useState<Rol>("cliente");
+  const [rol, setRol] = useState<Rol>("negocio");
 
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -104,7 +104,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (data.success) {
-        router.push("/login");
+        router.push("/");
       } else {
         setError(data.error || "No se pudo crear la cuenta. Probá de nuevo.");
       }
@@ -175,7 +175,9 @@ export default function RegisterPage() {
             <button
               key={r.id}
               type="button"
-              onClick={() => setRol(r.id)}
+              disabled={!r.available}
+              onClick={() => r.available && setRol(r.id)}
+              title={r.available ? undefined : "Próximamente"}
               style={{
                 display: "flex", flexDirection: "column",
                 alignItems: "center", gap: 5,
@@ -186,7 +188,9 @@ export default function RegisterPage() {
                 borderRadius: 16,
                 background: rol === r.id ? "rgba(255,193,69,0.1)" : "rgba(255,255,255,0.05)",
                 boxShadow: rol === r.id ? "0 0 0 1px rgba(255,193,69,0.3)" : "none",
-                cursor: "pointer", transition: "all 0.15s",
+                cursor: r.available ? "pointer" : "not-allowed",
+                opacity: r.available ? 1 : 0.45,
+                transition: "all 0.15s",
                 color: rol === r.id ? "#FFC145" : "rgba(251,243,230,0.55)",
               }}
             >
@@ -199,7 +203,7 @@ export default function RegisterPage() {
                 {r.label}
               </span>
               <span style={{ fontSize: 11, color: "rgba(251,243,230,0.4)", textAlign: "center" }}>
-                {r.desc}
+                {r.available ? r.desc : "Próximamente"}
               </span>
             </button>
           ))}
