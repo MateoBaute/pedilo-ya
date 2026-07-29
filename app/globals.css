@@ -1,26 +1,156 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background: #0f0906;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ── CSS Custom Properties ───────────────────────────────────────────────── */
+:root {
+  --red:          #C63D2F;
+  --red-dark:     #A32F22;
+  --orange:       #F2762E;
+  --yellow:       #FFC145;
+  --yellow-deep:  #F0A81E;
+  --green:        #4C9A5B;
+  --green-light:  #6DD481;
+  --ink:          #2B2016;
+  --ink-soft:     #5B4B3D;
+  --paper:        #FBF3E6;
+
+  /* Glass tokens */
+  --glass-bg:     rgba(255, 255, 255, 0.06);
+  --glass-bg-md:  rgba(255, 255, 255, 0.09);
+  --glass-bg-hi:  rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.11);
+  --glass-border-hi: rgba(255, 255, 255, 0.18);
+  --text-primary: #FBF3E6;
+  --text-soft:    rgba(251, 243, 230, 0.6);
+  --text-faint:   rgba(251, 243, 230, 0.35);
+}
+
+/* ── Animation keyframes ─────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes ride {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Animation-only classes (can't be done inline) ───────────────────────── */
+.pulse {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green-light);
+  animation: pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.rider {
+  offset-path: path("M 40,340 C 100,260 90,150 170,120 C 260,86 300,180 380,140 C 430,116 420,60 470,40");
+  offset-rotate: auto;
+  animation: ride 7s linear infinite;
+}
+
+.route-path {
+  fill: none;
+  stroke: rgba(251, 243, 230, 0.25);
+  stroke-width: 2.5;
+  stroke-dasharray: 9 10;
+}
+
+.town {
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: rgba(251, 243, 230, 0.4);
+  stroke-width: 1.8;
+}
+
+.town-label {
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  fill: rgba(251, 243, 230, 0.4);
+}
+
+.fade-up {
+  animation: fadeUp 0.65s ease both;
+}
+.fade-up-delay {
+  animation: fadeUp 0.65s ease 0.18s both;
+}
+
+/* ── Input placeholder ───────────────────────────────────────────────────── */
+input::placeholder {
+  color: rgba(251, 243, 230, 0.35);
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.15); border-radius: 999px; }
+
+/* ── Responsive grid overrides (only what's impossible inline) ───────────── */
+@media (max-width: 860px) {
+  .hero-grid      { grid-template-columns: 1fr !important; }
+  .steps-grid     { grid-template-columns: 1fr !important; }
+  .join-grid      { grid-template-columns: 1fr !important; }
+  .nav-links      { display: none !important; }
+  .route-stage    { min-height: 260px !important; order: -1; }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
