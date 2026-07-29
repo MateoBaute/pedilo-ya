@@ -13,9 +13,9 @@ interface LocationItem {
 }
 
 const ROLES = [
-  { id: "cliente" as Rol,      icon: User,        label: "Cliente",      desc: "Quiero hacer pedidos",   available: false },
-  { id: "negocio" as Rol,      icon: ShoppingBag, label: "Negocio",      desc: "Quiero vender",          available: true },
-  { id: "repartidor" as Rol,   icon: Bike,        label: "Repartidor",   desc: "Quiero repartir",        available: false },
+  { id: "user" as Rol,      icon: User,        label: "Cliente",      desc: "Quiero hacer pedidos",   available: false },
+  { id: "store" as Rol,      icon: ShoppingBag, label: "Negocio",      desc: "Quiero vender",          available: true },
+  { id: "dealer" as Rol,   icon: Bike,        label: "Repartidor",   desc: "Quiero repartir",        available: false },
 ];
 
 const PAGE_BG = "linear-gradient(160deg, #0f0906 0%, #1e1408 35%, #150d07 65%, #0a0603 100%)";

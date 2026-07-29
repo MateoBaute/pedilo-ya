@@ -63,14 +63,6 @@ const CATEGORIES = [
   { icon: Gift, label: "Regalos" },
 ];
 
-// const LOCATIONS = [
-//   "Mercedes, Soriano",
-//   "Dolores, Soriano",
-//   "Fray Bentos, Río Negro",
-//   "Young, Río Negro",
-//   "Trinidad, Flores",
-// ];
-
 const STEPS = [
   {
     num: "01",
@@ -101,6 +93,8 @@ export default function Home() {
   const [locationOpen, setLocationOpen] = useState(false);
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
   const locationRef = useRef<HTMLDivElement>(null);
+
+  const [isLogged, setLoggedIn] = useState<boolean>(false)
 
   interface LocationItem {
     id: number;
@@ -147,9 +141,31 @@ export default function Home() {
     } catch (error) { }
   }
 
+  async function checkLogged(): Promise<boolean> {
+    try {
+      const res = await fetch("/api/auth/me", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!res.ok) return false;
+
+      const data = await res.json();
+      if(data.loggedIn){
+        setLoggedIn(true)
+      }
+      return data.loggedIn === true
+    } catch (error) {
+      console.error("Error al verificar sesión:", error);
+      return false;
+    }
+  }
+
   useEffect(() => {
     locations();
+    checkLogged();
   }, [])
+
 
 
   return (
@@ -193,19 +209,21 @@ export default function Home() {
             ))}
           </nav>
 
-          <Link
-            href="/login"
-            style={{
-              background: "rgba(255,193,69,0.12)", color: "#FFC145",
-              border: "1px solid rgba(255,193,69,0.35)", borderRadius: 999,
-              padding: "9px 22px", fontSize: 14, fontWeight: 700,
-              transition: "all 0.15s",
-            }}
-            onMouseEnter={e => hoverIn(e, { background: "#FFC145", color: "#2B1A0A" })}
-            onMouseLeave={e => hoverOut(e, { background: "rgba(255,193,69,0.12)", color: "#FFC145" })}
-          >
-            Iniciar sesión
-          </Link>
+          {isLogged ? (
+            <Link
+              href="/login"
+              style={{
+                background: "rgba(255,193,69,0.12)", color: "#FFC145",
+                border: "1px solid rgba(255,193,69,0.35)", borderRadius: 999,
+                padding: "9px 22px", fontSize: 14, fontWeight: 700,
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={e => hoverIn(e, { background: "#FFC145", color: "#2B1A0A" })}
+              onMouseLeave={e => hoverOut(e, { background: "rgba(255,193,69,0.12)", color: "#FFC145" })}
+            >
+              Iniciar sesión
+            </Link>
+          ) : null}
         </div>
       </header>
 

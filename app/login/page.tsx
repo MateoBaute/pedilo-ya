@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -40,38 +40,42 @@ const fieldInput: React.CSSProperties = {
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("store");
   const [password, setPassword] = useState("");
+  const [roleOpen, setRoleOpen] = useState(false);
+  const roleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (roleRef.current && !roleRef.current.contains(e.target as Node)) {
+        setRoleOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
-      const data = await response.json();
-      if (data.success) {
-        if (data.type === "user") {
-          sessionStorage.setItem("userId", data.userId);
-          sessionStorage.setItem("token", data.token);
 
-        } else if (data.type === "store") {
-          sessionStorage.setItem("storeId", data.storeId);
-          sessionStorage.setItem("token", data.token);
-
-        }
-        sessionStorage.setItem("token", data.token);
-        router.push("/pedidos");
-
-      } else {
-        console.error("Error logging in:", data.error);
-      }
-    } catch (error) {
-      console.error("Error logging in:", error);
+    const data = {
+      mail: email,
+      rol:role,
+      pass:password
     }
+    console.log(data)
+    // try {
+    //   const response = await fetch('/api/login', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ email, role, password }),
+    //   })
+    //   const data = await response.json();
+    // } catch (error) {
+    //   console.error("Error logging in:", error);
+    // }
   }
 
   return (
@@ -133,6 +137,91 @@ export default function LoginPage() {
               onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
               onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
             />
+          </div>
+
+          <div>
+            <label style={fieldLabel}>Rol</label>
+            <div ref={roleRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                aria-haspopup="listbox"
+                aria-expanded={roleOpen}
+                onClick={() => setRoleOpen(open => !open)}
+                style={{
+                  ...fieldInput,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 8,
+                  width: '100%',
+                  cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.18)',
+                }}
+              >
+                <span style={{ color: '#FBF3E6', fontWeight: 500 }}>
+                  {role === 'store' ? 'Negocio' : role === 'dealer' ? 'Repartidor' : 'Cliente'}
+                </span>
+                <span style={{ fontSize: 12, color: 'rgba(251,243,230,0.45)' }}>
+                  ▼
+                </span>
+              </button>
+
+              {roleOpen && (
+                <ul
+                  role="listbox"
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)',
+                    left: 0,
+                    right: 0,
+                    background: 'rgba(20, 16, 12, 0.96)',
+                    border: '1px solid rgba(255,255,255,0.14)',
+                    borderRadius: 16,
+                    padding: 8,
+                    boxShadow: '0 24px 60px rgba(0,0,0,0.35)',
+                    zIndex: 10,
+                  }}
+                >
+                  {[
+                    { label: 'Negocio', value: 'store' },
+                    { label: 'Repartidor', value: 'dealer' },
+                    { label: 'Cliente', value: 'user' },
+                  ].map(option => (
+                    <li
+                      key={option.value}
+                      role="option"
+                      aria-selected={role === option.value}
+                      onClick={() => {
+                        setRole(option.value);
+                        setRoleOpen(false);
+                      }}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: 12,
+                        cursor: 'pointer',
+                        color: role === option.value ? '#FFC145' : '#FBF3E6',
+                        background: role === option.value ? 'rgba(255,193,69,0.14)' : 'transparent',
+                        fontWeight: 600,
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseEnter={e => {
+                        if (role !== option.value) {
+                          (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        if (role !== option.value) {
+                          (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        }
+                      }}
+                    >
+                      {option.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           <div>

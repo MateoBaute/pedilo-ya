@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { role, name, email, password, description, address, location } = body;
 
-    if (role !== "negocio") {
+    if (role !== "store") {
       return NextResponse.json(
         { error: "El registro para ese tipo de cuenta todavía no está disponible." },
         { status: 400 }
@@ -28,12 +28,8 @@ export async function POST(req: Request) {
     }
 
     const [existing] = await db.query<RowDataPacket[]>(
-      `SELECT email FROM stores WHERE email = ?
-       UNION ALL
-       SELECT email FROM users WHERE email = ?
-       UNION ALL
-       SELECT email FROM dealer WHERE email = ?`,
-      [email, email, email]
+      `SELECT email FROM stores WHERE email = ?`,
+      [email]
     );
     if (existing.length > 0) {
       return NextResponse.json({ error: "Ese email ya está registrado." }, { status: 409 });
