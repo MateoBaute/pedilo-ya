@@ -6,7 +6,6 @@ export const SESSION_COOKIE = "pedilo_ya_session";
 export interface SessionPayload {
   userId: number;
   email: string;
-  rol: "user" | "store" | "dealer";
 }
 
 export async function createSession(payload: SessionPayload): Promise<string> {

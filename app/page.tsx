@@ -141,7 +141,7 @@ export default function Home() {
     } catch (error) { }
   }
 
-  async function checkLogged(): Promise<boolean> {
+  async function checkLogged(){
     try {
       const res = await fetch("/api/auth/me", {
         method: "GET",
@@ -153,8 +153,10 @@ export default function Home() {
       const data = await res.json();
       if(data.loggedIn){
         setLoggedIn(true)
+        console.log('entro al if')
+      }else{
+        setLoggedIn(false)
       }
-      return data.loggedIn === true
     } catch (error) {
       console.error("Error al verificar sesión:", error);
       return false;
@@ -210,6 +212,19 @@ export default function Home() {
           </nav>
 
           {isLogged ? (
+            <button
+              style={{
+                background: "rgba(255,193,69,0.12)", color: "#FFC145",
+                border: "1px solid rgba(255,193,69,0.35)", borderRadius: 999,
+                padding: "9px 22px", fontSize: 14, fontWeight: 700,
+                transition: "all 0.15s", cursor: "pointer",
+              }}
+              onMouseEnter={e => hoverIn(e, { background: "#FFC145", color: "#2B1A0A" })}
+              onMouseLeave={e => hoverOut(e, { background: "rgba(255,193,69,0.12)", color: "#FFC145" })}
+            >
+              Cerrar sesión
+            </button>
+          ) : (
             <Link
               href="/login"
               style={{
@@ -223,7 +238,7 @@ export default function Home() {
             >
               Iniciar sesión
             </Link>
-          ) : null}
+          )}
         </div>
       </header>
 

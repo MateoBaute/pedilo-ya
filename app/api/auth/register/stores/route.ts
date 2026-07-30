@@ -7,14 +7,7 @@ import { createSession, SESSION_COOKIE } from "@/lib/auth";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { role, name, email, password, description, address, location } = body;
-
-    if (role !== "store") {
-      return NextResponse.json(
-        { error: "El registro para ese tipo de cuenta todavía no está disponible." },
-        { status: 400 }
-      );
-    }
+    const { name, email, password, description, address, location } = body;
 
     if (!name || !email || !password || !description || !address || !location) {
       return NextResponse.json({ error: "Faltan campos requeridos." }, { status: 400 });
@@ -45,11 +38,13 @@ export async function POST(req: Request) {
 
     const token = await createSession({
       userId: result.insertId,
-      email,
-      rol: "negocio",
+      email
     });
 
-    const response = NextResponse.json({ success: true }, { status: 201 });
+    const response = NextResponse.json(
+      { success: true, user: { id: result.insertId, name, email } },
+      { status: 201 }
+    );
     response.cookies.set(SESSION_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

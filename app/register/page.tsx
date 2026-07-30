@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ShoppingBag, User, Bike } from "lucide-react";
 
-type Rol = "cliente" | "negocio" | "repartidor";
+type Rol = "user" | "store" | "dealer";
 
 interface LocationItem {
   id: number;
@@ -13,9 +13,9 @@ interface LocationItem {
 }
 
 const ROLES = [
-  { id: "user" as Rol,      icon: User,        label: "Cliente",      desc: "Quiero hacer pedidos",   available: false },
-  { id: "store" as Rol,      icon: ShoppingBag, label: "Negocio",      desc: "Quiero vender",          available: true },
-  { id: "dealer" as Rol,   icon: Bike,        label: "Repartidor",   desc: "Quiero repartir",        available: false },
+  { id: "user" as Rol, icon: User, label: "Cliente", desc: "Quiero hacer pedidos" },
+  { id: "store" as Rol, icon: ShoppingBag, label: "Negocio", desc: "Quiero vender" },
+  { id: "dealer" as Rol, icon: Bike, label: "Repartidor", desc: "Quiero repartir" },
 ];
 
 const PAGE_BG = "linear-gradient(160deg, #0f0906 0%, #1e1408 35%, #150d07 65%, #0a0603 100%)";
@@ -40,7 +40,7 @@ const fieldInput: React.CSSProperties = {
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [rol, setRol] = useState<Rol>("negocio");
+  const [rol, setRol] = useState<Rol | null>(null);
 
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -69,42 +69,43 @@ export default function RegisterPage() {
     fetchLocations();
   }, []);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    switch (rol) {
+      case 'store':
+        registerStore();
+        break;
+      // case 'user':
+      //   registerUser();
+      //   break;
+      // case 'dealer':
+      //   registerDealer();
+      //   break;
+      default:
+        console.warn(`Rol no reconocido: ${rol}`);
+    }
+  }
+
+  async function registerStore() {
     setError("");
     setLoading(true);
-
     try {
-      const payload: Record<string, unknown> = {
-        role: rol,
-        name: nombre,
-        email,
-        password,
-      };
-
-      if (rol === "cliente") {
-        payload.phone = telefono;
-        payload.address = direccion;
-        payload.location = location;
-      } else if (rol === "negocio") {
-        payload.description = descripcion;
-        payload.address = direccion;
-        payload.location = location;
-      } else if (rol === "repartidor") {
-        payload.phone = telefono;
-      }
-
-      const response = await fetch('/api/register', {
+      const response = await fetch('/api/auth/register/stores', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: nombre,
+          email: email,
+          password: password,
+          description: descripcion,
+          address: direccion,
+          location: location
+        })
+      })
 
+      const data = await response.json()
       if (data.success) {
-        router.push("/");
+        router.push("/login");
       } else {
         setError(data.error || "No se pudo crear la cuenta. Probá de nuevo.");
       }
@@ -114,6 +115,52 @@ export default function RegisterPage() {
       setLoading(false);
     }
   }
+
+  // async function handleSubmit(e: React.FormEvent) {
+  //   e.preventDefault();
+  //   setError("");
+  //   setLoading(true);
+
+  //   try {
+  //     const payload: Record<string, unknown> = {
+  //       role: rol,
+  //       name: nombre,
+  //       email,
+  //       password,
+  //     };
+
+  //     if (rol === "user") {
+  //       payload.phone = telefono;
+  //       payload.address = direccion;
+  //       payload.location = location;
+  //     } else if (rol === "store") {
+  //       payload.description = descripcion;
+  //       payload.address = direccion;
+  //       payload.location = location;
+  //     } else if (rol === "dealer") {
+  //       payload.phone = telefono;
+  //     }
+
+  //     const response = await fetch('/api/register', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+  //     const data = await response.json();
+
+  //     if (data.success) {
+  //       router.push("/");
+  //     } else {
+  //       setError(data.error || "No se pudo crear la cuenta. Probá de nuevo.");
+  //     }
+  //   } catch (error) {
+  //     setError("Error de conexión. Probá de nuevo.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   return (
     <div style={{
@@ -175,9 +222,7 @@ export default function RegisterPage() {
             <button
               key={r.id}
               type="button"
-              disabled={!r.available}
-              onClick={() => r.available && setRol(r.id)}
-              title={r.available ? undefined : "Próximamente"}
+              onClick={() => setRol(r.id)}
               style={{
                 display: "flex", flexDirection: "column",
                 alignItems: "center", gap: 5,
@@ -188,8 +233,7 @@ export default function RegisterPage() {
                 borderRadius: 16,
                 background: rol === r.id ? "rgba(255,193,69,0.1)" : "rgba(255,255,255,0.05)",
                 boxShadow: rol === r.id ? "0 0 0 1px rgba(255,193,69,0.3)" : "none",
-                cursor: r.available ? "pointer" : "not-allowed",
-                opacity: r.available ? 1 : 0.45,
+                cursor: "pointer",
                 transition: "all 0.15s",
                 color: rol === r.id ? "#FFC145" : "rgba(251,243,230,0.55)",
               }}
@@ -203,7 +247,7 @@ export default function RegisterPage() {
                 {r.label}
               </span>
               <span style={{ fontSize: 11, color: "rgba(251,243,230,0.4)", textAlign: "center" }}>
-                {r.available ? r.desc : "Próximamente"}
+                {r.desc}
               </span>
             </button>
           ))}
@@ -212,13 +256,13 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div>
             <label style={fieldLabel}>
-              {rol === "negocio" ? "Nombre del negocio" : "Tu nombre"}
+              {rol === "store" ? "Nombre del negocio" : "Tu nombre"}
             </label>
             <input
               type="text"
               value={nombre}
               onChange={e => setNombre(e.target.value)}
-              placeholder={rol === "negocio" ? "Ej: Almacén Don Pedro" : "Ej: Juan García"}
+              placeholder={rol === "store" ? "Ej: Almacén Don Pedro" : "Ej: Juan García"}
               required
               style={fieldInput}
               onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
@@ -226,7 +270,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {(rol === "cliente" || rol === "repartidor") && (
+          {(rol === "user" || rol === "dealer") && (
             <div>
               <label style={fieldLabel}>Teléfono</label>
               <input
@@ -242,7 +286,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {rol === "negocio" && (
+          {rol === "store" && (
             <div>
               <label style={fieldLabel}>Descripción</label>
               <input
@@ -258,7 +302,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {(rol === "cliente" || rol === "negocio") && (
+          {(rol === "user" || rol === "store") && (
             <div>
               <label style={fieldLabel}>Dirección</label>
               <input
@@ -274,7 +318,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {(rol === "cliente" || rol === "negocio") && (
+          {(rol === "user" || rol === "store") && (
             <div>
               <label style={fieldLabel}>Localidad</label>
               <select
