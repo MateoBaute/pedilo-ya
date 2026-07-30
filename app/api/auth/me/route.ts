@@ -10,7 +10,6 @@ export async function GET() {
   }
 
   const session = await verifySession(token);
-  console.log(session)
   if (!session) {
     return NextResponse.json({ loggedIn: false }, { status: 200 });
   }

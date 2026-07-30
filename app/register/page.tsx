@@ -75,9 +75,9 @@ export default function RegisterPage() {
       case 'store':
         registerStore();
         break;
-      // case 'user':
-      //   registerUser();
-      //   break;
+      case 'user':
+        registerUser();
+        break;
       // case 'dealer':
       //   registerDealer();
       //   break;
@@ -93,7 +93,7 @@ export default function RegisterPage() {
       const response = await fetch('/api/auth/register/stores', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           name: nombre,
           email: email,
           password: password,
@@ -116,288 +116,307 @@ export default function RegisterPage() {
     }
   }
 
-  // async function handleSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
-  //   setError("");
-  //   setLoading(true);
+  async function registerUser() {
+    try {
+      const user = {
+        
+      }
+      const response = await fetch('/api/auth/register/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: nombre, email: email, password: password, phone: telefono, addres: direccion, locality: location}),
+      })
+    const data = await response.json()
+    if (data.success) {
 
-  //   try {
-  //     const payload: Record<string, unknown> = {
-  //       role: rol,
-  //       name: nombre,
-  //       email,
-  //       password,
-  //     };
+    }
+  } catch (error) {
 
-  //     if (rol === "user") {
-  //       payload.phone = telefono;
-  //       payload.address = direccion;
-  //       payload.location = location;
-  //     } else if (rol === "store") {
-  //       payload.description = descripcion;
-  //       payload.address = direccion;
-  //       payload.location = location;
-  //     } else if (rol === "dealer") {
-  //       payload.phone = telefono;
-  //     }
+  }
+}
 
-  //     const response = await fetch('/api/register', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-  //     const data = await response.json();
+// async function handleSubmit(e: React.FormEvent) {
+//   e.preventDefault();
+//   setError("");
+//   setLoading(true);
 
-  //     if (data.success) {
-  //       router.push("/");
-  //     } else {
-  //       setError(data.error || "No se pudo crear la cuenta. Probá de nuevo.");
-  //     }
-  //   } catch (error) {
-  //     setError("Error de conexión. Probá de nuevo.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
+//   try {
+//     const payload: Record<string, unknown> = {
+//       role: rol,
+//       name: nombre,
+//       email,
+//       password,
+//     };
 
-  return (
+//     if (rol === "user") {
+//       payload.phone = telefono;
+//       payload.address = direccion;
+//       payload.location = location;
+//     } else if (rol === "store") {
+//       payload.description = descripcion;
+//       payload.address = direccion;
+//       payload.location = location;
+//     } else if (rol === "dealer") {
+//       payload.phone = telefono;
+//     }
+
+//     const response = await fetch('/api/register', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(payload),
+//     });
+//     const data = await response.json();
+
+//     if (data.success) {
+//       router.push("/");
+//     } else {
+//       setError(data.error || "No se pudo crear la cuenta. Probá de nuevo.");
+//     }
+//   } catch (error) {
+//     setError("Error de conexión. Probá de nuevo.");
+//   } finally {
+//     setLoading(false);
+//   }
+// }
+
+return (
+  <div style={{
+    minHeight: "100vh",
+    background: PAGE_BG,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    padding: "40px 16px", position: "relative",
+  }}>
+    {/* Ambient glow */}
     <div style={{
-      minHeight: "100vh",
-      background: PAGE_BG,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "40px 16px", position: "relative",
+      position: "absolute", top: "20%", right: "25%",
+      width: 600, height: 600, pointerEvents: "none",
+      background: "radial-gradient(circle, rgba(255,193,69,0.07) 0%, transparent 65%)",
+    }} />
+
+    <div style={{
+      background: "rgba(255,255,255,0.07)",
+      backdropFilter: "blur(28px)",
+      WebkitBackdropFilter: "blur(28px)",
+      border: "1px solid rgba(255,255,255,0.14)",
+      boxShadow: "0 28px 72px rgba(0,0,0,0.55)",
+      borderRadius: 28, padding: "44px 40px",
+      width: "100%", maxWidth: 520,
+      position: "relative",
     }}>
-      {/* Ambient glow */}
+      {/* Top accent */}
       <div style={{
-        position: "absolute", top: "20%", right: "25%",
-        width: 600, height: 600, pointerEvents: "none",
-        background: "radial-gradient(circle, rgba(255,193,69,0.07) 0%, transparent 65%)",
+        position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
+        background: "linear-gradient(90deg, transparent, rgba(198,61,47,0.5), transparent)",
       }} />
 
-      <div style={{
-        background: "rgba(255,255,255,0.07)",
-        backdropFilter: "blur(28px)",
-        WebkitBackdropFilter: "blur(28px)",
-        border: "1px solid rgba(255,255,255,0.14)",
-        boxShadow: "0 28px 72px rgba(0,0,0,0.55)",
-        borderRadius: 28, padding: "44px 40px",
-        width: "100%", maxWidth: 520,
-        position: "relative",
+      <Link href="/" style={{
+        display: "inline-block",
+        fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800,
+        color: "#C63D2F", marginBottom: 30,
       }}>
-        {/* Top accent */}
-        <div style={{
-          position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
-          background: "linear-gradient(90deg, transparent, rgba(198,61,47,0.5), transparent)",
-        }} />
+        Pedilo<span style={{ color: "#FFC145" }}>Ya</span>
+      </Link>
 
-        <Link href="/" style={{
-          display: "inline-block",
-          fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800,
-          color: "#C63D2F", marginBottom: 30,
+      <h1 style={{
+        fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 700,
+        color: "#FBF3E6", letterSpacing: "-0.02em", marginBottom: 8,
+      }}>
+        Creá tu cuenta
+      </h1>
+      <p style={{ fontSize: 14, color: "rgba(251,243,230,0.5)", marginBottom: 30 }}>
+        ¿Ya tenés cuenta?{" "}
+        <Link href="/login" style={{
+          color: "#FFC145", fontWeight: 600,
+          textDecoration: "underline", textUnderlineOffset: 3,
         }}>
-          Pedilo<span style={{ color: "#FFC145" }}>Ya</span>
+          Ingresá acá
         </Link>
+      </p>
 
-        <h1 style={{
-          fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 700,
-          color: "#FBF3E6", letterSpacing: "-0.02em", marginBottom: 8,
-        }}>
-          Creá tu cuenta
-        </h1>
-        <p style={{ fontSize: 14, color: "rgba(251,243,230,0.5)", marginBottom: 30 }}>
-          ¿Ya tenés cuenta?{" "}
-          <Link href="/login" style={{
-            color: "#FFC145", fontWeight: 600,
-            textDecoration: "underline", textUnderlineOffset: 3,
-          }}>
-            Ingresá acá
-          </Link>
-        </p>
-
-        {/* Role selector */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 28 }}>
-          {ROLES.map(r => (
-            <button
-              key={r.id}
-              type="button"
-              onClick={() => setRol(r.id)}
-              style={{
-                display: "flex", flexDirection: "column",
-                alignItems: "center", gap: 5,
-                padding: "14px 8px",
-                border: rol === r.id
-                  ? "1px solid rgba(255,193,69,0.6)"
-                  : "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 16,
-                background: rol === r.id ? "rgba(255,193,69,0.1)" : "rgba(255,255,255,0.05)",
-                boxShadow: rol === r.id ? "0 0 0 1px rgba(255,193,69,0.3)" : "none",
-                cursor: "pointer",
-                transition: "all 0.15s",
-                color: rol === r.id ? "#FFC145" : "rgba(251,243,230,0.55)",
-              }}
-            >
-              <r.icon size={20} />
-              <span style={{
-                fontSize: 13, fontWeight: 700,
-                fontFamily: "var(--font-display)",
-                color: rol === r.id ? "#FFC145" : "rgba(251,243,230,0.8)",
-              }}>
-                {r.label}
-              </span>
-              <span style={{ fontSize: 11, color: "rgba(251,243,230,0.4)", textAlign: "center" }}>
-                {r.desc}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <div>
-            <label style={fieldLabel}>
-              {rol === "store" ? "Nombre del negocio" : "Tu nombre"}
-            </label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={e => setNombre(e.target.value)}
-              placeholder={rol === "store" ? "Ej: Almacén Don Pedro" : "Ej: Juan García"}
-              required
-              style={fieldInput}
-              onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
-              onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
-            />
-          </div>
-
-          {(rol === "user" || rol === "dealer") && (
-            <div>
-              <label style={fieldLabel}>Teléfono</label>
-              <input
-                type="tel"
-                value={telefono}
-                onChange={e => setTelefono(e.target.value)}
-                placeholder="Ej: 099 123 456"
-                required
-                style={fieldInput}
-                onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
-                onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
-              />
-            </div>
-          )}
-
-          {rol === "store" && (
-            <div>
-              <label style={fieldLabel}>Descripción</label>
-              <input
-                type="text"
-                value={descripcion}
-                onChange={e => setDescripcion(e.target.value)}
-                placeholder="Contanos qué vendés"
-                required
-                style={fieldInput}
-                onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
-                onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
-              />
-            </div>
-          )}
-
-          {(rol === "user" || rol === "store") && (
-            <div>
-              <label style={fieldLabel}>Dirección</label>
-              <input
-                type="text"
-                value={direccion}
-                onChange={e => setDireccion(e.target.value)}
-                placeholder="Calle y número"
-                required
-                style={fieldInput}
-                onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
-                onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
-              />
-            </div>
-          )}
-
-          {(rol === "user" || rol === "store") && (
-            <div>
-              <label style={fieldLabel}>Localidad</label>
-              <select
-                value={location}
-                onChange={e => setLocation(e.target.value)}
-                required
-                style={fieldInput}
-                onFocus={e => (e.target as HTMLSelectElement).style.borderColor = "rgba(255,193,69,0.55)"}
-                onBlur={e => (e.target as HTMLSelectElement).style.borderColor = "rgba(255,255,255,0.13)"}
-              >
-                <option value="" disabled>Elegí tu localidad</option>
-                {locationsList.map(loc => (
-                  <option key={loc.id} value={loc.name}>{loc.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div>
-            <label style={fieldLabel}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="vos@ejemplo.com"
-              required
-              autoComplete="email"
-              style={fieldInput}
-              onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
-              onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
-            />
-          </div>
-
-          <div>
-            <label style={fieldLabel}>Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Mínimo 6 caracteres"
-              required
-              minLength={6}
-              autoComplete="new-password"
-              style={fieldInput}
-              onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
-              onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
-            />
-          </div>
-
-          {error && (
-            <p style={{ fontSize: 13, color: "#FF8A80", margin: 0 }}>{error}</p>
-          )}
-
+      {/* Role selector */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 28 }}>
+        {ROLES.map(r => (
           <button
-            type="submit"
-            disabled={loading}
+            key={r.id}
+            type="button"
+            onClick={() => setRol(r.id)}
             style={{
-              marginTop: 4,
-              background: "linear-gradient(135deg, #C63D2F, #9e2a1e)",
-              color: "#FBF3E6", fontWeight: 700, fontSize: 15,
-              padding: "14px", borderRadius: 14, border: "none",
-              cursor: loading ? "default" : "pointer",
-              opacity: loading ? 0.7 : 1,
-              boxShadow: "0 4px 20px rgba(198,61,47,0.4)",
-              transition: "transform 0.15s, box-shadow 0.15s",
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(198,61,47,0.55)";
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(198,61,47,0.4)";
+              display: "flex", flexDirection: "column",
+              alignItems: "center", gap: 5,
+              padding: "14px 8px",
+              border: rol === r.id
+                ? "1px solid rgba(255,193,69,0.6)"
+                : "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 16,
+              background: rol === r.id ? "rgba(255,193,69,0.1)" : "rgba(255,255,255,0.05)",
+              boxShadow: rol === r.id ? "0 0 0 1px rgba(255,193,69,0.3)" : "none",
+              cursor: "pointer",
+              transition: "all 0.15s",
+              color: rol === r.id ? "#FFC145" : "rgba(251,243,230,0.55)",
             }}
           >
-            {loading ? "Creando cuenta..." : "Crear cuenta"}
+            <r.icon size={20} />
+            <span style={{
+              fontSize: 13, fontWeight: 700,
+              fontFamily: "var(--font-display)",
+              color: rol === r.id ? "#FFC145" : "rgba(251,243,230,0.8)",
+            }}>
+              {r.label}
+            </span>
+            <span style={{ fontSize: 11, color: "rgba(251,243,230,0.4)", textAlign: "center" }}>
+              {r.desc}
+            </span>
           </button>
-        </form>
+        ))}
       </div>
+
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        <div>
+          <label style={fieldLabel}>
+            {rol === "store" ? "Nombre del negocio" : "Tu nombre"}
+          </label>
+          <input
+            type="text"
+            value={nombre}
+            onChange={e => setNombre(e.target.value)}
+            placeholder={rol === "store" ? "Ej: Almacén Don Pedro" : "Ej: Juan García"}
+            required
+            style={fieldInput}
+            onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
+            onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
+          />
+        </div>
+
+        {(rol === "user" || rol === "dealer") && (
+          <div>
+            <label style={fieldLabel}>Teléfono</label>
+            <input
+              type="tel"
+              value={telefono}
+              onChange={e => setTelefono(e.target.value)}
+              placeholder="Ej: 099 123 456"
+              required
+              style={fieldInput}
+              onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
+              onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
+            />
+          </div>
+        )}
+
+        {rol === "store" && (
+          <div>
+            <label style={fieldLabel}>Descripción</label>
+            <input
+              type="text"
+              value={descripcion}
+              onChange={e => setDescripcion(e.target.value)}
+              placeholder="Contanos qué vendés"
+              required
+              style={fieldInput}
+              onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
+              onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
+            />
+          </div>
+        )}
+
+        {(rol === "user" || rol === "store") && (
+          <div>
+            <label style={fieldLabel}>Dirección</label>
+            <input
+              type="text"
+              value={direccion}
+              onChange={e => setDireccion(e.target.value)}
+              placeholder="Calle y número"
+              required
+              style={fieldInput}
+              onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
+              onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
+            />
+          </div>
+        )}
+
+        {(rol === "user" || rol === "store") && (
+          <div>
+            <label style={fieldLabel}>Localidad</label>
+            <select
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              required
+              style={fieldInput}
+              onFocus={e => (e.target as HTMLSelectElement).style.borderColor = "rgba(255,193,69,0.55)"}
+              onBlur={e => (e.target as HTMLSelectElement).style.borderColor = "rgba(255,255,255,0.13)"}
+            >
+              <option value="" disabled>Elegí tu localidad</option>
+              {locationsList.map(loc => (
+                <option key={loc.id} value={loc.name}>{loc.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div>
+          <label style={fieldLabel}>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="vos@ejemplo.com"
+            required
+            autoComplete="email"
+            style={fieldInput}
+            onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
+            onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
+          />
+        </div>
+
+        <div>
+          <label style={fieldLabel}>Contraseña</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Mínimo 6 caracteres"
+            required
+            minLength={6}
+            autoComplete="new-password"
+            style={fieldInput}
+            onFocus={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,193,69,0.55)"}
+            onBlur={e => (e.target as HTMLInputElement).style.borderColor = "rgba(255,255,255,0.13)"}
+          />
+        </div>
+
+        {error && (
+          <p style={{ fontSize: 13, color: "#FF8A80", margin: 0 }}>{error}</p>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            marginTop: 4,
+            background: "linear-gradient(135deg, #C63D2F, #9e2a1e)",
+            color: "#FBF3E6", fontWeight: 700, fontSize: 15,
+            padding: "14px", borderRadius: 14, border: "none",
+            cursor: loading ? "default" : "pointer",
+            opacity: loading ? 0.7 : 1,
+            boxShadow: "0 4px 20px rgba(198,61,47,0.4)",
+            transition: "transform 0.15s, box-shadow 0.15s",
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+            (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(198,61,47,0.55)";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+            (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(198,61,47,0.4)";
+          }}
+        >
+          {loading ? "Creando cuenta..." : "Crear cuenta"}
+        </button>
+      </form>
     </div>
-  );
+  </div>
+);
 }

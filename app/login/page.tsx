@@ -58,12 +58,7 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const data = {
-      mail: email,
-      rol:role,
-      pass:password
-    }
-    console.log(data)
+    
     // try {
     //   const response = await fetch('/api/login', {
     //     method: 'POST',
