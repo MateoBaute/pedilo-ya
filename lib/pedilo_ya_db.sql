@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-07-2026 a las 04:39:07
+-- Tiempo de generación: 30-07-2026 a las 23:30:49
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -124,12 +124,42 @@ CREATE TABLE `stores` (
 -- Volcado de datos para la tabla `stores`
 --
 
-INSERT INTO `stores` (`id`, `name`, `description`, `address`, `average_rating`, `location`) VALUES
-(26, 'TecnoShop Centro', 'Tienda especializada en tecnología y accesorios de última generación.', 'Av. Principal 123', 4.80, 'Zona Centro'),
-(27, 'Moda Express', 'Tu ropa favorita al mejor precio, tendencias para todas las temporadas.', 'Calle Norte 456', 4.20, 'Plaza Norte'),
-(28, 'Gamer Zone', 'Todo para el setup de tus sueños: componentes, periféricos y consolas.', 'Paseo Central 789', 4.90, 'Avenida Central'),
-(29, 'Bake & Coffee', 'Cafetería de especialidad artesanal y pastelería fina recién horneada.', 'Esquina Sur 321', 4.60, 'Barrio Sur'),
-(30, 'Hogar & Estilo', 'Artículos únicos de decoración, organización y bazar para tu cocina.', 'Local 15 - CC Altamira', 4.40, 'Centro Comercial Altamira');
+INSERT INTO `stores` (`id`, `name`, `description`, `address`, `average_rating`, `location`, `email`, `password_hash`) VALUES
+(26, 'TecnoShop Centro', 'Tienda especializada en tecnología y accesorios de última generación.', 'Av. Principal 123', 4.80, 'Zona Centro', NULL, NULL),
+(27, 'Moda Express', 'Tu ropa favorita al mejor precio, tendencias para todas las temporadas.', 'Calle Norte 456', 4.20, 'Plaza Norte', NULL, NULL),
+(28, 'Gamer Zone', 'Todo para el setup de tus sueños: componentes, periféricos y consolas.', 'Paseo Central 789', 4.90, 'Avenida Central', NULL, NULL),
+(29, 'Bake & Coffee', 'Cafetería de especialidad artesanal y pastelería fina recién horneada.', 'Esquina Sur 321', 4.60, 'Barrio Sur', NULL, NULL),
+(30, 'Hogar & Estilo', 'Artículos únicos de decoración, organización y bazar para tu cocina.', 'Local 15 - CC Altamira', 4.40, 'Centro Comercial Altamira', NULL, NULL),
+(36, 'mateo', 'noc', 'Zelmar Michelini 1117', 0.00, 'Barrio Sur', 'mateobaute10@gmail.com', '$2b$10$pDqAK9tQccq8IYPSF.qMk.pRmtGRivD1BwbbPTzQOVY81kEGBkkGO');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `full_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `locality` varchar(45) NOT NULL,
+  `average_rating` decimal(3,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `users`
+--
+
+INSERT INTO `users` (`id`, `full_name`, `email`, `password_hash`, `phone`, `address`, `locality`, `average_rating`) VALUES
+(1, 'M', 'm@gmail.com', '$2b$10$aTml6xjWznHepdeGoaX/mOUltLlRcqcdKboa6Fyf2JEmgCZ3LT3ou', '98563417', 'ituzaingó 1473', 'Barrio Sur', 0.00),
+(2, 'Mateo', 'mateobaute10@gmail.com', '$2b$10$grssb4cQbvrv6QBPAC.qyeiZQyUY1BLf6i9Q69E/7Tj0spTFFZ13m', '098653417', 'Ituzaingo 1473', 'Barrio Sur', 0.00),
+(3, 'M', 'mñan@gmail.com', '$2b$10$aR4P5ZojZKH6zGZXbJdy5eOVGdb161YMS2nB2yp/BZvwxKUKtUJJS', '98563417', 'ituzaingó 1473', 'Barrio Sur', 0.00),
+(4, 'M', 'man@gmail.com', '$2b$10$CTP.xxdrtRFBPMQ5m87u4utAhZBLfE22vEKYrTOK4brJbA65nGUKS', '96563417', 'ituzaingó 1473', 'Barrio Sur', 0.00),
+(6, 'M', 'ma@gmail.com', '$2b$10$yjwcTuzK1muzL6qTx8Xwtu0X9DRYLhGpik/X6hnZe/5GA2kTAr6TG', '96563417', 'ituzaingó 1473', 'Barrio Sur', 0.00),
+(7, 'M', 'max@gmail.com', '$2b$10$yLVR3BWVQhkfOzxQ1XX7heVPjAltSYDAYyxarnWiDv2Q9HwZTkkDu', '96563417', 'ituzaingó 1473', 'Barrio Sur', 0.00);
 
 --
 -- Índices para tablas volcadas
@@ -162,7 +192,14 @@ ALTER TABLE `reviews`
 --
 ALTER TABLE `stores`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_stores_location` (`location`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_stores_location` (`location`);
+
+--
+-- Indices de la tabla `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
@@ -191,7 +228,13 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT de la tabla `stores`
 --
 ALTER TABLE `stores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+
+--
+-- AUTO_INCREMENT de la tabla `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restricciones para tablas volcadas
