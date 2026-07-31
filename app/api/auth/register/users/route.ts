@@ -3,49 +3,53 @@ import bcrypt from "bcryptjs";
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import db from "@/lib/db";
 import { createSession, SESSION_COOKIE } from "@/lib/auth";
-import { Phone } from "lucide-react";
 
 export async function POST(req: Request) {
+    const body = await req.json();
+    const { name, email, password, phone, address, locality } = body;
+
+    if (!name || !email || !password || !phone || !address || !locality) {
+        return NextResponse.json({ error: "Faltan campos requeridos." }, { status: 400 });
+    }
+
+    if (password.length < 6) {
+        return NextResponse.json(
+            { error: "La contraseña debe tener al menos 6 caracteres." },
+            { status: 400 }
+        );
+    }
+
+    const connection = await db.getConnection();
+
     try {
-        const body = await req.json();
-        const { name, email, password, phone, address, locality } = body;
+        await connection.beginTransaction();
 
-
-        if (!name || !email || !password || !phone || !address || !locality) {
-            return NextResponse.json({ error: "Faltan campos requeridos." }, { status: 400 });
-        }
-
-        if (password.length < 6) {
+        const [existing] = await connection.query<RowDataPacket[]>(
+            `SELECT email, phone FROM users WHERE email = ? OR phone = ?`,
+            [email, phone]
+        );
+        if (existing.length > 0) {
+            await connection.rollback();
+            const conflict = existing[0].email === email ? "email" : "número";
             return NextResponse.json(
-                { error: "La contraseña debe tener al menos 6 caracteres." },
-                { status: 400 }
+                { success: false, error: `Ese ${conflict} ya está registrado.` },
+                { status: 409 }
             );
         }
 
-        const [existing] = await db.query<RowDataPacket[]>(
-            `SELECT email FROM users WHERE email = ?`,
-            [email]
-        );
-        if (existing.length > 0) {
-            return NextResponse.json({ success: false, error: "Ese email ya está registrado." }, { status: 409 });
-        }
+        const passwordHash = await bcrypt.hash(password, 10);
 
-        const [exist] = await db.query<RowDataPacket[]>(
-            `SELECT phone FROM users WHERE phone = ?`,
-            [phone]
+        const [result] = await connection.query<ResultSetHeader>(
+            'INSERT INTO users(full_name, email, password_hash, phone, address, locality) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, email, passwordHash, String(phone), address, locality]
         );
-        if (exist.length > 0) {
-            return NextResponse.json({ success: false, error: "Ese Número ya está registrado." }, { status: 409 });
-        }
-
-        const passwordHash = await bcrypt.hash(password, 10)
-        const [result] = await db.query<ResultSetHeader>('INSERT INTO users( full_name, email, password_hash, phone, address, locality) VALUES ( ?, ?, ?, ?, ?, ?)',
-            [name, email, passwordHash, phone, address, locality]);
 
         const token = await createSession({
             userId: result.insertId,
             email
         });
+
+        await connection.commit();
 
         const response = NextResponse.json(
             { success: true, user: { id: result.insertId, name, email, locality } },
@@ -59,8 +63,31 @@ export async function POST(req: Request) {
             maxAge: 60 * 60 * 24 * 7,
         });
         return response;
+
     } catch (error) {
-        console.log('A ocurrido un error: ', error)
-        return NextResponse.json({ success: false, message: error }, { status: 500 })
+        await connection.rollback();
+        console.log('A ocurrido un error: ', error);
+
+        if (typeof error === "object" && error !== null && "code" in error && error.code === "ER_DUP_ENTRY") {
+            const sqlMessage = "sqlMessage" in error && typeof error.sqlMessage === "string"
+                ? error.sqlMessage
+                : "";
+
+            if (sqlMessage.includes("email")) {
+                return NextResponse.json({ success: false, error: "Ese Email ya está registrado." }, { status: 409 });
+            }
+            if (sqlMessage.includes("phone")) {
+                return NextResponse.json({ success: false, error: "Ese Número ya está registrado." }, { status: 409 });
+            }
+
+            return NextResponse.json({ success: false, error: "Ese registro ya existe." }, { status: 409 });
+        }
+
+        return NextResponse.json(
+            { success: false, message: error instanceof Error ? error.message : String(error) },
+            { status: 500 }
+        );
+    } finally {
+        connection.release();
     }
 }

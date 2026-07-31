@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 export const SESSION_COOKIE = "pedilo_ya_session";
 
 export interface SessionPayload {

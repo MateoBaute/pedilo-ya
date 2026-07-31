@@ -337,7 +337,7 @@ return (
           </div>
         )}
 
-        {(rol === "user" || rol === "store") && (
+        {(rol === "user" || rol === "store" || rol ==='dealer') && (
           <div>
             <label style={fieldLabel}>Localidad</label>
             <select
