@@ -55,22 +55,36 @@ export default function LoginPage() {
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function loginStores(){
+    try{
+     const response = await fetch('/api/auth/login/stores', {
+      method:'POST',
+      headers: {'Contetn-type': 'application/json'},
+      body:JSON.stringify({email, password})
+     })
+     const data = await response.json()
 
-    
-    // try {
-    //   const response = await fetch('/api/login', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ email, role, password }),
-    //   })
-    //   const data = await response.json();
-    // } catch (error) {
-    //   console.error("Error logging in:", error);
-    // }
+     if(data.success){
+      router.push('/store')
+     }
+    }catch(error){
+
+    }
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    switch(role){
+      case 'store':
+        loginStores();
+        break;
+      case 'dealer':
+        // Handle dealer login
+        break;
+      case 'user':
+        // Handle user login
+        break;
+    }
   }
 
   return (

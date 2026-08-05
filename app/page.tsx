@@ -141,7 +141,7 @@ export default function Home() {
     } catch (error) { }
   }
 
-  async function checkLogged(){
+  async function checkLogged() {
     try {
       const res = await fetch("/api/auth/me", {
         method: "GET",
@@ -151,10 +151,10 @@ export default function Home() {
       if (!res.ok) return false;
 
       const data = await res.json();
-      if(data.loggedIn){
+      if (data.loggedIn) {
         setLoggedIn(true)
         console.log('entro al if')
-      }else{
+      } else {
         setLoggedIn(false)
       }
     } catch (error) {
@@ -646,6 +646,13 @@ export default function Home() {
               }}
               onMouseEnter={e => hoverIn(e, { background: "rgba(255,255,255,0.2)", transform: "translateY(-2px)" })}
               onMouseLeave={e => hoverOut(e, { background: "rgba(255,255,255,0.1)", transform: "translateY(0)" })}
+              onClick={() => {
+                if (isLogged) {
+                  router.push("/repartidor");
+                } else {
+                  router.push("/login");
+                }
+              }}
             >
               Quiero repartir →
             </button>
