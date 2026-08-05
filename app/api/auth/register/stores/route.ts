@@ -43,7 +43,8 @@ export async function POST(req: Request) {
 
     const token = await createSession({
       userId: result.insertId,
-      email
+      email,
+      type: 'store'
     });
 
     await connection.commit();

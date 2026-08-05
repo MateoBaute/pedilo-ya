@@ -46,7 +46,8 @@ export async function POST(req: Request) {
 
         const token = await createSession({
             userId: result.insertId,
-            email
+            email,
+            type: 'user'
         });
 
         await connection.commit();

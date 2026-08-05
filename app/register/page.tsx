@@ -135,51 +135,7 @@ export default function RegisterPage() {
   }
 }
 
-// async function handleSubmit(e: React.FormEvent) {
-//   e.preventDefault();
-//   setError("");
-//   setLoading(true);
 
-//   try {
-//     const payload: Record<string, unknown> = {
-//       role: rol,
-//       name: nombre,
-//       email,
-//       password,
-//     };
-
-//     if (rol === "user") {
-//       payload.phone = telefono;
-//       payload.address = direccion;
-//       payload.location = location;
-//     } else if (rol === "store") {
-//       payload.description = descripcion;
-//       payload.address = direccion;
-//       payload.location = location;
-//     } else if (rol === "dealer") {
-//       payload.phone = telefono;
-//     }
-
-//     const response = await fetch('/api/register', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify(payload),
-//     });
-//     const data = await response.json();
-
-//     if (data.success) {
-//       router.push("/");
-//     } else {
-//       setError(data.error || "No se pudo crear la cuenta. Probá de nuevo.");
-//     }
-//   } catch (error) {
-//     setError("Error de conexión. Probá de nuevo.");
-//   } finally {
-//     setLoading(false);
-//   }
-// }
 
 return (
   <div style={{

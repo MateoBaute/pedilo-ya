@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const token = await createSession({
       userId: safeUser.id,
       email: safeUser.email,
-      type: 'user'
+      type: 'dealer'
     })
 
     const response = NextResponse.json({ success: true, user: safeUser }, { status: 200 })
